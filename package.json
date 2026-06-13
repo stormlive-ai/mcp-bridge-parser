@@ -1,0 +1,59 @@
+{
+  "name": "mcp-bridge-parser",
+  "version": "0.2.0",
+  "description": "Convert OpenAPI specs to MCP (Model Context Protocol) server configurations. Works in Node.js, browser, and Deno.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "openapi",
+    "claude-desktop",
+    "cursor",
+    "mcp-server",
+    "openapi-to-mcp",
+    "ai",
+    "llm",
+    "agent",
+    "api",
+    "converter"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stormlive-ai/mcp-bridge-parser.git"
+  },
+  "homepage": "https://mcpbridge.org",
+  "bugs": {
+    "url": "https://github.com/stormlive-ai/mcp-bridge-parser/issues"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "prepublishOnly": "npm run build",
+    "test": "node --test dist/*.js"
+  }
+}
