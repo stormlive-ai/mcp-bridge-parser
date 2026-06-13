@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![GitHub](https://img.shields.io/github/stars/stormlive-ai/mcp-bridge-parser?style=social)](https://github.com/stormlive-ai/mcp-bridge-parser)
 
-Used by [MCP-Bridge](https://mcpbridge.org) — the platform that converts, hosts, and indexes 1000+ MCP-ready API configurations.
+**[mcpbridge.org](https://mcpbridge.org)** — Try the live converter, browse 1000+ API configs, and access hosted MCP endpoints.
 
 ---
 
