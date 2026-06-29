@@ -1,7 +1,7 @@
 {
   "name": "mcp-bridge-parser",
   "version": "0.2.0",
-  "description": "Convert OpenAPI specs to MCP (Model Context Protocol) server configurations. Works in Node.js, browser, and Deno. Part of MCP-Bridge — https://mcpbridge.org",
+  "description": "Convert OpenAPI specs to MCP (Model Context Protocol) server configurations. Works in Node.js, browser, and Deno. Part of MCP-Bridge - https://mcpbridge.org",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -54,6 +54,6 @@
     "build": "tsup src/index.ts --format esm,cjs --dts --clean",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
     "prepublishOnly": "npm run build",
-    "test": "node --test dist/*.js"
+    "test": "node --test test.mjs"
   }
 }
