@@ -2,7 +2,14 @@ import yaml from "js-yaml"
 import type { McpConfig, McpTool, OpenApiSpec } from "./types"
 
 export function parseSpecObject(spec: Record<string, unknown>): McpConfig {
-  if (!spec.openapi && !spec.swagger && !spec.paths) {
+  const hasVersion = typeof spec.openapi === "string" || typeof spec.swagger === "string"
+  const hasPaths =
+    spec.paths !== null &&
+    typeof spec.paths === "object" &&
+    !Array.isArray(spec.paths) &&
+    Object.keys(spec.paths).length > 0
+
+  if (!hasVersion || !hasPaths) {
     throw new Error("Not a valid OpenAPI spec (missing openapi/swagger version or paths)")
   }
 
@@ -11,14 +18,15 @@ export function parseSpecObject(spec: Record<string, unknown>): McpConfig {
   const info = openApiSpec.info || {}
   const apiName = (info.title || "my-api")
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "") || "my_api"
 
   const tools: McpTool[] = []
 
   for (const [path, methods] of Object.entries(paths)) {
     if (!methods || typeof methods !== "object") continue
 
-    for (const method of ["get", "post", "put", "delete", "patch"]) {
+    for (const method of ["get", "put", "post", "delete", "options", "head", "patch", "trace"]) {
       const op = methods[method] as Record<string, unknown> | undefined
       if (!op) continue
 
@@ -85,7 +93,7 @@ export function parseSpecObject(spec: Record<string, unknown>): McpConfig {
 
 export function parseOpenApiSpec(input: string | Record<string, unknown>): McpConfig {
   if (typeof input === "string") {
-    const trimmed = input.trim()
+    const trimmed = dedent(input)
     let spec: Record<string, unknown>
 
     try {
@@ -102,4 +110,20 @@ export function parseOpenApiSpec(input: string | Record<string, unknown>): McpCo
   }
 
   return parseSpecObject(input)
+}
+
+function dedent(input: string): string {
+  const lines = input.trim().split(/\r?\n/)
+  const indents = lines
+    .slice(1)
+    .filter((line) => line.trim().length > 0)
+    .map((line) => line.match(/^\s*/)?.[0].length ?? 0)
+    .filter((length) => length > 0)
+  const minIndent = indents.length > 0 ? Math.min(...indents) : 0
+
+  if (minIndent === 0) return lines.join("\n")
+
+  return lines
+    .map((line, index) => index === 0 ? line : line.slice(Math.min(minIndent, line.length)))
+    .join("\n")
 }

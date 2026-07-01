@@ -71,6 +71,36 @@ describe("mcp-bridge-parser", () => {
     assert.equal(tool.inputSchema.properties.id.type, "string")
   })
 
+  it("parses all OpenAPI operation methods", () => {
+    const result = parseOpenApiSpec({
+      openapi: "3.0.0",
+      info: { title: "Methods API", version: "1.0.0" },
+      paths: {
+        "/items": {
+          get: { summary: "Get items" },
+          put: { summary: "Put items" },
+          post: { summary: "Post items" },
+          delete: { summary: "Delete items" },
+          options: { summary: "Options items" },
+          head: { summary: "Head items" },
+          patch: { summary: "Patch items" },
+          trace: { summary: "Trace items" },
+        },
+      },
+    })
+    const names = result.mcpServers.methods_api.tools.map((tool) => tool.name)
+    assert.deepEqual(names, [
+      "get_items",
+      "put_items",
+      "post_items",
+      "delete_items",
+      "options_items",
+      "head_items",
+      "patch_items",
+      "trace_items",
+    ])
+  })
+
   it("throws on invalid input", () => {
     assert.throws(() => parseOpenApiSpec("not valid"))
     assert.throws(() => parseOpenApiSpec({}))
