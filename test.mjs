@@ -107,4 +107,58 @@ describe("mcp-bridge-parser", () => {
     assert.ok(props["body.name"])
     assert.ok(props["body.price"])
   })
+
+  it("parses an OpenAPI 3.1 Xquik-style spec", () => {
+    const result = parseOpenApiSpec({
+      openapi: "3.1.0",
+      info: { title: "Xquik API", version: "1.0" },
+      servers: [{ url: "https://xquik.com" }],
+      security: [{ apiKey: [] }, { oauthBearer: [] }],
+      paths: {
+        "/api/v1/x/tweets/search": {
+          get: {
+            summary: "Search public X posts",
+            parameters: [
+              { name: "q", in: "query", required: true, schema: { type: "string" } },
+              { name: "limit", in: "query", schema: { type: "integer" } },
+            ],
+            responses: { "200": { description: "OK" } },
+          },
+        },
+        "/api/v1/compose": {
+          post: {
+            summary: "Create a draft post",
+            requestBody: {
+              required: true,
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      text: { type: "string", description: "Post text" },
+                    },
+                  },
+                },
+              },
+            },
+            responses: { "200": { description: "OK" } },
+          },
+        },
+      },
+      components: {
+        securitySchemes: {
+          apiKey: { type: "apiKey", in: "header", name: "x-api-key" },
+          oauthBearer: { type: "http", scheme: "bearer" },
+        },
+      },
+    })
+
+    const tools = result.mcpServers.xquik_api.tools
+    assert.equal(tools.length, 2)
+    assert.equal(tools[0].name, "search_public_x_posts")
+    assert.ok(tools[0].inputSchema.properties.q)
+    assert.ok(tools[0].inputSchema.properties.limit)
+    assert.equal(tools[1].name, "create_a_draft_post")
+    assert.ok(tools[1].inputSchema.properties["body.text"])
+  })
 })
