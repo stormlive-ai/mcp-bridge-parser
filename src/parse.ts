@@ -96,10 +96,18 @@ export function parseOpenApiSpec(input: string | Record<string, unknown>): McpCo
     const trimmed = dedent(input)
     let spec: Record<string, unknown>
 
-    try {
-      spec = JSON.parse(trimmed)
-    } catch {
-      spec = yaml.load(trimmed) as Record<string, unknown>
+    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+      try {
+        spec = JSON.parse(trimmed)
+      } catch (err) {
+        throw new Error(`Invalid JSON spec: ${(err as Error).message}`)
+      }
+    } else {
+      try {
+        spec = yaml.load(trimmed) as Record<string, unknown>
+      } catch (err) {
+        throw new Error(`Invalid YAML spec: ${(err as Error).message}`)
+      }
     }
 
     if (!spec || typeof spec !== "object") {
