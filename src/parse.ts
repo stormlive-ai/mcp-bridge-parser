@@ -126,12 +126,17 @@ function dedent(input: string): string {
     .slice(1)
     .filter((line) => line.trim().length > 0)
     .map((line) => line.match(/^\s*/)?.[0].length ?? 0)
-    .filter((length) => length > 0)
   const minIndent = indents.length > 0 ? Math.min(...indents) : 0
 
   if (minIndent === 0) return lines.join("\n")
 
   return lines
-    .map((line, index) => index === 0 ? line : line.slice(Math.min(minIndent, line.length)))
+    .map((line, index) => {
+      if (index === 0) return line
+      const match = line.match(/^\s*/)
+      const leadingSpaces = match?.[0].length ?? 0
+      const sliceLength = Math.min(minIndent, leadingSpaces)
+      return line.slice(sliceLength)
+    })
     .join("\n")
 }
